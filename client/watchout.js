@@ -13,7 +13,34 @@ var boardHeight = 500;
 var boardWidth = 700;
 var imgSize = 50;
 var maxAsteroidsOnField = 7;
-var startPositions = ['top', 'left', 'bottom', 'right'];
+
+var highScore = 0, collisions = 0, score = 0;
+var scoreTimer;
+
+var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
+.style('border', '1px solid yellow').attr('class', 'gameBoard');
+
+var drag = d3.behavior.drag()
+.on("drag", dragmove);
+
+function dragmove(d) {
+  var x = d3.event.x - 50;
+  var y = d3.event.y - 50;
+  d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
+}
+
+var player = container.append('svg:image').attr('xlink:href', 'falcon.png')
+  .attr('height', imgSize * 1.5).attr('width', imgSize * 1.5).attr('class', 'player')
+  .attr('transform', 'translate(' + boardWidth/2 + ',' + boardHeight/2 + ')')
+  .call(drag);
+
+
+
+
+
+
+
+
 
 var generateStartAndEnd = function() {
   var random = Math.floor(Math.random() * 4);
@@ -54,31 +81,63 @@ var getPos = function(d, request) {
   }
 };
 
-var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
-.style('border', '1px solid yellow').attr('class', 'gameBoard');
+
+//Collision detection
+var handleMouseOver = function(d, i) {
+  sampleData = [];
+  collisions += 1;
+  d3.select('.collisions span').text(collisions);
+  d3.selectAll('.asteroid').remove();
+  //window.alert('Mouse over!');
+};
+
+var increaseScore = function() {
+  //scoreTimer = setInterval(() => {
+  score += 5;
+  d3.select('.current span').text(score);
+  //}, 500);
+};
+
+var stopIncreasingScore = function() {
+  clearInterval(scoreTimer);
+};
+
+
+
 
 var runAsteroidSpawner = function() {
   if (sampleData.length <= maxAsteroidsOnField) {
     sampleData.push(generateAsteroid());
   }
 
+  d3.select('.board svg').on('mouseenter', increaseScore);
 
   console.log('Called asteroid spawners with', sampleData.length,'asteroids.');
   var asteroids = container.selectAll('image').data(sampleData);
   asteroids.enter()
-    .append('svg:image').attr('xlink:href', 'asteroid.png').attr('height', imgSize).attr('width', imgSize)
+    .append('svg:image').attr('xlink:href', 'asteroid.png')
+    .attr('height', imgSize).attr('width', imgSize).attr('class', 'asteroid').on('mouseover', handleMouseOver)
     .attr('transform', (d) => getPos(d, 'start'))
-    .transition().duration(1800).ease('linear')
+    .transition().duration(1600).ease('linear')
     .attr('transform', (d) => getPos(d, 'end')).remove();
 
-  asteroids.exit().remove();
+  // asteroids.exit().remove();
+
+
 
   if (sampleData.length >= maxAsteroidsOnField) {
     console.log('Over max asteroids!');
-    sampleData.pop();
+    sampleData.shift();
     console.log('Popped. New length', sampleData.length);
   }
-  setTimeout(runAsteroidSpawner, 600);
+
+  // if () {
+  //   score += 10;
+  //   d3.select('.current span').text(score);
+  // }
+  increaseScore();
+
+  setTimeout(runAsteroidSpawner, 500);
 }
 
 runAsteroidSpawner();
