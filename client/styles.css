@@ -11,3 +11,7 @@ Feel free to use it if you like. */
 body {
   background-color: black;
 }
+
+.gameBoard {
+  background-image: url("stars.jpg");
+}
