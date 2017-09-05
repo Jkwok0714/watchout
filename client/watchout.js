@@ -8,19 +8,11 @@ d3.select('.board').selectAll('div').data([150, 10, 170]).enter()
 */
 
 
-var sampleData = [100, 72, 200, 417];
+var sampleData = [];
 var boardHeight = 500;
 var boardWidth = 700;
 var imgSize = 50;
 var startPositions = ['top', 'left', 'bottom', 'right'];
-
-
-var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
-  .style('border', '1px solid yellow').attr('class', 'gameBoard');
-
-var getPos = function(d) {
-  return 'translate(' + Math.random() * boardWidth + ',' + (Math.random() * d) + ')';
-};
 
 var generateStartAndEnd = function() {
   var random = Math.floor(Math.random() * 4);
@@ -45,16 +37,30 @@ var generateStartAndEnd = function() {
   return [start, end];
 }
 
-var asteroids = container.selectAll('image').data(sampleData).enter()
-  .append('svg:image').attr('xlink:href', 'asteroid.png').attr('height', imgSize).attr('width', imgSize)
-  .transition().duration(3000)
-  .attr('transform', (d) => getPos(d));
-  //.attr('x', (d) => d).attr('y', (d) => Math.random() * d);
-
 var generateAsteroid = function() {
   var result = {};
   result.startPos, result.endPos = [];
 
   [result.startPos, result.endPos] = generateStartAndEnd();
-
+  return result;
 }
+
+var getPos = function(d, request) {
+  if (request === 'start') {
+    return 'translate(' + d.startPos[0] + ',' + d.startPos[1] + ')';
+  } else {
+    return 'translate(' + d.endPos[0] + ',' + d.endPos[1] + ')';
+  }
+};
+
+sampleData = [generateAsteroid(), generateAsteroid(), generateAsteroid()];
+
+var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
+.style('border', '1px solid yellow').attr('class', 'gameBoard');
+
+var asteroids = container.selectAll('image').data(sampleData).enter()
+  .append('svg:image').attr('xlink:href', 'asteroid.png').attr('height', imgSize).attr('width', imgSize)
+  .attr('transform', (d) => getPos(d, 'start'))
+  .transition().duration(3000)
+  .attr('transform', (d) => getPos(d, 'end'));
+//.attr('x', (d) => d).attr('y', (d) => Math.random() * d);
