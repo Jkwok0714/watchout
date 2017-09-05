@@ -12,6 +12,7 @@ var sampleData = [];
 var boardHeight = 500;
 var boardWidth = 700;
 var imgSize = 50;
+var maxAsteroidsOnField = 7;
 var startPositions = ['top', 'left', 'bottom', 'right'];
 
 var generateStartAndEnd = function() {
@@ -53,14 +54,32 @@ var getPos = function(d, request) {
   }
 };
 
-sampleData = [generateAsteroid(), generateAsteroid(), generateAsteroid()];
-
 var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
 .style('border', '1px solid yellow').attr('class', 'gameBoard');
 
-var asteroids = container.selectAll('image').data(sampleData).enter()
-  .append('svg:image').attr('xlink:href', 'asteroid.png').attr('height', imgSize).attr('width', imgSize)
-  .attr('transform', (d) => getPos(d, 'start'))
-  .transition().duration(3000)
-  .attr('transform', (d) => getPos(d, 'end'));
+var runAsteroidSpawner = function() {
+  if (sampleData.length <= maxAsteroidsOnField) {
+    sampleData.push(generateAsteroid());
+  }
+
+
+  console.log('Called asteroid spawners with', sampleData.length,'asteroids.');
+  var asteroids = container.selectAll('image').data(sampleData);
+  asteroids.enter()
+    .append('svg:image').attr('xlink:href', 'asteroid.png').attr('height', imgSize).attr('width', imgSize)
+    .attr('transform', (d) => getPos(d, 'start'))
+    .transition().duration(1800).ease('linear')
+    .attr('transform', (d) => getPos(d, 'end')).remove();
+
+  asteroids.exit().remove();
+
+  if (sampleData.length >= maxAsteroidsOnField) {
+    console.log('Over max asteroids!');
+    sampleData.pop();
+    console.log('Popped. New length', sampleData.length);
+  }
+  setTimeout(runAsteroidSpawner, 600);
+}
+
+runAsteroidSpawner();
 //.attr('x', (d) => d).attr('y', (d) => Math.random() * d);
