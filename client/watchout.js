@@ -42,9 +42,9 @@ var runAsteroidSpawner = function() {
   var asteroids = container.selectAll('image').data(sampleData);
   asteroids.enter()
     .append('svg:image').attr('xlink:href', 'asteroid.png')
-    .attr('height', imgSize).attr('width', imgSize).attr('class', 'asteroid').on('mouseover', handleMouseOver)
+    .attr('height', (d) => d.size * imgSize).attr('width', (d) => d.size * imgSize).attr('class', 'asteroid').on('mouseover', handleMouseOver)
     .attr('transform', (d) => getPos(d, 'start'))
-    .transition().duration(1600).ease('linear')
+    .transition().duration((d) => d.speed).ease('linear')
     .attr('transform', (d) => getPos(d, 'end')).remove();
 
   // asteroids.exit().remove();

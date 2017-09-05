@@ -1,11 +1,11 @@
-function dragmove(d) {
+var dragmove = function (d) {
   var x = d3.event.x - 50;
   var y = d3.event.y - 50;
   d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
   increaseScore();
 }
 
-var generateStartAndEnd = function() {
+var generateStartAndEnd = () => {
   var random = Math.floor(Math.random() * 4);
   var start, end;
   if (random === 0) {
@@ -28,15 +28,19 @@ var generateStartAndEnd = function() {
   return [start, end];
 }
 
-var generateAsteroid = function() {
+var generateAsteroid = () => {
   var result = {};
   result.startPos, result.endPos = [];
 
   [result.startPos, result.endPos] = generateStartAndEnd();
+
+  result.size = Math.random() * 1 + 0.5;
+
+  result.speed = 800 + (result.size * 1000);
   return result;
 }
 
-var getPos = function(d, request) {
+var getPos = (d, request) => {
   if (request === 'start') {
     return 'translate(' + d.startPos[0] + ',' + d.startPos[1] + ')';
   } else {
@@ -46,7 +50,7 @@ var getPos = function(d, request) {
 
 
 //Collision detection
-var handleMouseOver = function(d, i) {
+var handleMouseOver = (d, i) => {
   sampleData = [];
   collisions += 1;
 
@@ -64,7 +68,7 @@ var handleMouseOver = function(d, i) {
   d3.select('.board .player').attr('transform', 'translate(' + boardWidth/2 + ',' + boardHeight/2 + ')');
 };
 
-var increaseScore = function() {
+var increaseScore = () => {
   //scoreTimer = setInterval(() => {
   score += 1;
   d3.select('.current span').text(score);
