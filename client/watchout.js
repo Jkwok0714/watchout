@@ -1,12 +1,4 @@
 // start slingin' some d3 here.
-/* Fail attempt
-d3.select('.board').selectAll('div').data([150, 10, 170]).enter()
-  .append('svg').style("border", "1px solid black")
-  .attr('width', 50).attr('height', 50)
-  .attr('x', (d) => d).attr('y', (d) => d);
-  //.style('position', 'absolute');
-*/
-
 
 var sampleData = [];
 var boardHeight = 500;
@@ -19,6 +11,7 @@ var scoreTimer;
 
 window.alert('Keep dragging the Millenium Falcon to increase score. Game over when cursor hits asteroids!');
 
+//Set up basic elements
 var container = d3.select('.board').append('svg').attr('width', boardWidth).attr('height', boardHeight)
 .style('border', '1px solid yellow').attr('class', 'gameBoard');
 
@@ -31,6 +24,7 @@ var player = container.append('svg:image').attr('xlink:href', 'falcon.png')
   .call(drag);
 
 
+//Spawn enemies
 var runAsteroidSpawner = function() {
   if (sampleData.length <= maxAsteroidsOnField) {
     sampleData.push(generateAsteroid());
@@ -47,24 +41,13 @@ var runAsteroidSpawner = function() {
     .transition().duration((d) => d.speed).ease('linear')
     .attr('transform', (d) => getPos(d, 'end')).remove();
 
-  // asteroids.exit().remove();
-
-
-
   if (sampleData.length >= maxAsteroidsOnField) {
     console.log('Over max asteroids!');
     sampleData.shift();
     console.log('Popped. New length', sampleData.length);
   }
 
-  // if () {
-  //   score += 10;
-  //   d3.select('.current span').text(score);
-  // }
-  // increaseScore();
-
   setTimeout(runAsteroidSpawner, 500);
 }
 
 runAsteroidSpawner();
-//.attr('x', (d) => d).attr('y', (d) => Math.random() * d);
